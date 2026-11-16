@@ -4,12 +4,13 @@
 
 **Enunciado:** elegir 5 gráficos y hacer un cuaderno que los muestre con **Matplotlib** y, en el mismo cuaderno, con **Seaborn**. Después, mostrar esos 5 gráficos en una página con **Streamlit**.
 
-- 📓 **Cuaderno:** [`graficos_matplotlib_seaborn.ipynb`](graficos_matplotlib_seaborn.ipynb)
-- 🌐 **Página de Streamlit:** _PEGAR AQUÍ EL ENLACE DE STREAMLIT_
+- 📓 **Cuaderno en Colab:** [Abrir en Colab](https://colab.research.google.com/github/HerranzP-Lorena/graficos-superstore/blob/main/graficos_matplotlib_seaborn.ipynb) · [ver en GitHub](graficos_matplotlib_seaborn.ipynb)
+- 🌐 **Página de Streamlit:** https://herranzp-lorena-graficos-superstore-app-4nhzib.streamlit.app/
+- 💾 **Repositorio:** https://github.com/HerranzP-Lorena/graficos-superstore
 
 ## Los 5 gráficos
 
-Tipos elegidos del cuaderno de clase `matplotlib.ipynb` (*Chart Chooser*), uno por familia, con su misma configuración de estilo.
+Tipos de gráfico del *Chart Chooser*, uno por familia.
 
 | # | Gráfico | Familia | Matplotlib | Seaborn | Streamlit |
 |---|---|---|---|---|---|
@@ -19,11 +20,11 @@ Tipos elegidos del cuaderno de clase `matplotlib.ipynb` (*Chart Chooser*), uno p
 | 4 | Column Histogram | Distribución | `ax.hist` | `sns.histplot(discrete=True)` | `st.bar_chart` del recuento |
 | 5 | Stacked Column Chart | Composición | `ax.bar(bottom=…)` | `sns.histplot(multiple="stack")` | `st.bar_chart(stack=True)` |
 
-En la página de Streamlit cada gráfico tiene 3 pestañas: versión propia de Streamlit (interactiva), Matplotlib y Seaborn. También tiene filtros por región y por segmento de cliente.
+En la página de Streamlit cada gráfico tiene 3 pestañas: gráfico nativo de Streamlit (interactivo), Matplotlib y Seaborn. Incluye filtros por región y por segmento de cliente.
 
 ## Datos
 
-[Superstore Dataset — Kaggle](https://www.kaggle.com/datasets/vivek468/superstore-dataset-final): 9.994 líneas de pedido de una tienda de EE. UU. (2014–2017). Guardado como `datos/superstore.csv`; el archivo original se llama `Sample - Superstore.csv`.
+[Superstore Dataset — Kaggle](https://www.kaggle.com/datasets/vivek468/superstore-dataset-final): 9.994 líneas de pedido de una tienda de EE. UU. (2014–2017). Archivo original `Sample - Superstore.csv`, guardado como `datos/superstore.csv`.
 
 ## Estructura
 
