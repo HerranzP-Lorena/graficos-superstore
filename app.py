@@ -1,31 +1,23 @@
-# app.py — Página de Streamlit con los 5 gráficos de ventas de Superstore (datos de Kaggle)
-# Ejecutar en local:   streamlit run app.py
-#
-# Cómo funciona Streamlit: lee este archivo de arriba abajo y "pinta" en la página web
-# cada st.algo() que encuentra. Cada vez que el usuario toca un filtro, vuelve a ejecutar
-# el script entero con el nuevo valor.
-#
-# Cada gráfico tiene 3 pestañas:
-#   - Streamlit  → gráfico PROPIO de Streamlit (st.bar_chart, st.line_chart, st.scatter_chart): interactivo
-#   - Matplotlib → la misma versión que en el cuaderno, mostrada con st.pyplot
-#   - Seaborn    → la misma versión que en el cuaderno, mostrada con st.pyplot
+# Página de Streamlit con 5 gráficos de ventas de Superstore (datos de Kaggle).
+# Cada gráfico se muestra en tres pestañas: gráfico nativo de Streamlit, Matplotlib y Seaborn.
+# Ejecución en local: streamlit run app.py
 
-from pathlib import Path          # Path: construir la ruta al CSV a partir de la carpeta de este archivo
+from pathlib import Path          # Rutas de archivos
 
-import matplotlib.pyplot as plt   # matplotlib: la librería base que dibuja
-import matplotlib.ticker as mtick # ticker: formato de los números de los ejes
-import numpy as np                # numpy: posiciones de las columnas apiladas
-import pandas as pd               # pandas: leer y filtrar los datos
-import seaborn as sns             # seaborn: gráficos estadísticos sobre matplotlib
-import streamlit as st            # streamlit: convierte el script en página web
+import matplotlib.pyplot as plt   # Librería base de gráficos
+import matplotlib.ticker as mtick # Formato de los números de los ejes
+import numpy as np                # Cálculos con arrays
+import pandas as pd               # Lectura y manejo de los datos
+import seaborn as sns             # Gráficos estadísticos sobre Matplotlib
+import streamlit as st            # Página web
 
 # ---------------------------------------------------------------------------
-# Configuración de la página (tiene que ser la primera llamada a st.)
+# Configuración de la página
 # ---------------------------------------------------------------------------
 st.set_page_config(page_title="Superstore · 5 gráficos", page_icon="📊", layout="wide")
 
 # ---------------------------------------------------------------------------
-# Estilo: configuración del cuaderno de clase (matplotlib.ipynb)
+# Estilo de los gráficos
 # ---------------------------------------------------------------------------
 SURFACE = "#fcfcfb"
 TEXT, TEXT2, GRID = "#0b0b0b", "#52514e", "#e3e2de"
@@ -40,19 +32,22 @@ plt.rcParams.update({
 })
 
 
-def xgrid(ax):   # rejilla solo vertical
+def xgrid(ax):
+    """Deja solo la rejilla vertical."""
     ax.grid(False)
     ax.grid(True, axis="x")
 
 
-def ygrid(ax):   # rejilla solo horizontal
+def ygrid(ax):
+    """Deja solo la rejilla horizontal."""
     ax.grid(False)
     ax.grid(True, axis="y")
 
 
-miles = mtick.FuncFormatter(lambda v, pos: f"{v/1000:,.0f}k".replace(",", "."))   # 150000 → "150k"
+# Formato de eje en miles: 150000 → 150k
+miles = mtick.FuncFormatter(lambda v, pos: f"{v/1000:,.0f}k".replace(",", "."))
 
-# Traducciones (inglés → español)
+# Traducción de los valores al español
 CATEGORIAS = {"Furniture": "Muebles", "Office Supplies": "Material de oficina", "Technology": "Tecnología"}
 SUBCATEGORIAS = {
     "Phones": "Teléfonos", "Chairs": "Sillas", "Storage": "Almacenaje", "Tables": "Mesas",
@@ -64,13 +59,13 @@ SUBCATEGORIAS = {
 REGIONES = {"West": "Oeste", "East": "Este", "Central": "Centro", "South": "Sur"}
 SEGMENTOS = {"Consumer": "Particulares", "Corporate": "Empresas", "Home Office": "Oficina en casa"}
 ORDEN_CAT = ["Tecnología", "Muebles", "Material de oficina"]
-COLOR_CAT = dict(zip(ORDEN_CAT, PAL))   # cada categoría siempre con su color
+COLOR_CAT = dict(zip(ORDEN_CAT, PAL))   # Color fijo por categoría
 
 
 # ---------------------------------------------------------------------------
-# Carga y limpieza de datos (igual que en el cuaderno)
+# Carga y limpieza de datos
 # ---------------------------------------------------------------------------
-@st.cache_data   # guarda el resultado: el CSV se lee una vez, no en cada recarga de la página
+@st.cache_data   # El CSV se lee una sola vez y queda en memoria
 def cargar_datos():
     ruta = Path(__file__).parent / "datos" / "superstore.csv"
     df = pd.read_csv(ruta, encoding="latin-1")
@@ -87,7 +82,7 @@ def cargar_datos():
 
 
 def mostrar(fig):
-    """Muestra una figura de matplotlib/seaborn en la página y la cierra para no gastar memoria."""
+    """Muestra una figura de Matplotlib o Seaborn y la cierra para liberar memoria."""
     st.pyplot(fig)
     plt.close(fig)
 
@@ -111,11 +106,11 @@ regiones = st.sidebar.multiselect("Región", sorted(df["Región"].unique()), def
 segmentos = st.sidebar.multiselect("Segmento de cliente", sorted(df["Segmento"].unique()),
                                    default=sorted(df["Segmento"].unique()))
 
-datos = df[df["Región"].isin(regiones) & df["Segmento"].isin(segmentos)]   # filas que cumplen los dos filtros
+datos = df[df["Región"].isin(regiones) & df["Segmento"].isin(segmentos)]   # Datos filtrados
 
 if datos.empty:
     st.warning("No hay datos con esos filtros. Marca al menos una región y un segmento.")
-    st.stop()   # detiene el script: no se dibuja nada más
+    st.stop()   # Detiene la ejecución si no hay datos
 
 # ---------------------------------------------------------------------------
 # Indicadores
@@ -137,9 +132,9 @@ ventas_sub = (datos.groupby("Subcategoría", as_index=False)["Sales"].sum()
                    .sort_values("Sales", ascending=False))
 tab_st, tab_mpl, tab_sns = st.tabs(["Streamlit", "Matplotlib", "Seaborn"])
 
-with tab_st:   # lo que va dentro de este "with" aparece en la pestaña Streamlit
+with tab_st:
     st.bar_chart(ventas_sub, x="Subcategoría", y="Sales", horizontal=True,
-                 sort="-Sales",                 # de mayor a menor ("-" = descendente)
+                 sort="-Sales",                 # Orden descendente
                  color=PAL[0], x_label="Ventas ($)", y_label="", height=480)
 
 with tab_mpl:
@@ -169,9 +164,9 @@ with tab_sns:
 # 2 — Line Chart (muchos periodos)
 # ===========================================================================
 st.header("2 · Line Chart: ventas mensuales")
-st.caption("Cambio en el tiempo, muchos periodos. Pasa el ratón por la línea (pestaña Streamlit) para ver cada mes.")
+st.caption("Cambio en el tiempo, muchos periodos.")
 
-ventas_mes = datos.set_index("Order Date")["Sales"].resample("MS").sum().reset_index()   # suma por mes
+ventas_mes = datos.set_index("Order Date")["Sales"].resample("MS").sum().reset_index()   # Ventas por mes
 tab_st, tab_mpl, tab_sns = st.tabs(["Streamlit", "Matplotlib", "Seaborn"])
 
 with tab_st:
@@ -210,7 +205,7 @@ with tab_sns:
 st.header("3 · Scatter Chart: ventas frente a beneficio por cliente")
 st.caption("Relación. Cada punto es un cliente; los que quedan por debajo de 0 dejan pérdidas.")
 
-clientes = datos.groupby("Customer ID", as_index=False)[["Sales", "Profit"]].sum()   # un punto por cliente
+clientes = datos.groupby("Customer ID", as_index=False)[["Sales", "Profit"]].sum()   # Totales por cliente
 tab_st, tab_mpl, tab_sns = st.tabs(["Streamlit", "Matplotlib", "Seaborn"])
 
 with tab_st:
@@ -249,9 +244,8 @@ dias = datos["Días de envío"]
 tab_st, tab_mpl, tab_sns = st.tabs(["Streamlit", "Matplotlib", "Seaborn"])
 
 with tab_st:
-    # Streamlit no tiene histograma propio: contamos cuántas hay en cada número de días
-    # y lo pintamos con st.bar_chart (con números enteros es lo mismo que un histograma)
-    conteo = dias.value_counts().sort_index()   # value_counts cuenta repeticiones; sort_index ordena por día
+    # Recuento por número de días, mostrado como columnas
+    conteo = dias.value_counts().sort_index()
     st.bar_chart(conteo, color=PAL[0], x_label="Días entre el pedido y el envío", y_label="Líneas de pedido")
 
 with tab_mpl:
@@ -285,9 +279,9 @@ tabla = datos.pivot_table(index="Año", columns="Categoría", values="Sales", ag
 tab_st, tab_mpl, tab_sns = st.tabs(["Streamlit", "Matplotlib", "Seaborn"])
 
 with tab_st:
-    st.bar_chart(tabla,                                    # filas = años, columnas = categorías
-                 stack=True,                               # apilar los segmentos
-                 color=[COLOR_CAT[c] for c in ORDEN_CAT],  # un color por categoría, en el mismo orden
+    st.bar_chart(tabla,                                    # Filas: años; columnas: categorías
+                 stack=True,                               # Segmentos apilados
+                 color=[COLOR_CAT[c] for c in ORDEN_CAT],
                  x_label="", y_label="Ventas ($)")
 
 with tab_mpl:
